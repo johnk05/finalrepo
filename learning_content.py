@@ -1,0 +1,102 @@
+VIDEO_MODULES = [
+    {
+        "id": 1,
+        "title": "Machine Learning Fundamentals",
+        "url": "https://www.youtube.com/watch?v=Gv9_4yMHFhI",
+        "duration": "8:45",
+        "transcript": "Machine learning is a subset of artificial intelligence that provides systems the ability to automatically learn and improve from experience without being explicitly programmed. It focuses on the development of computer programs that can access data and use it to learn for themselves. The process of learning begins with observations or data, such as examples, direct experience, or instruction, in order to look for patterns in data and make better decisions in the future based on the examples that we provide.",
+        "quiz": [
+            {"q": "What is the primary focus of machine learning?", "options": ["Explicit programming", "Learning from experience", "Manual data entry", "Hardware design"], "a": "Learning from experience"},
+            {"q": "ML is a subset of which field?", "options": ["Web development", "Artificial Intelligence", "Database management", "Network security"], "a": "Artificial Intelligence"},
+            {"q": "What is required to start the learning process?", "options": ["High-speed internet", "Observations or data", "A lot of RAM", "A new computer"], "a": "Observations or data"},
+            {"q": "The goal is to look for ______ in data.", "options": ["Errors", "Colors", "Patterns", "File sizes"], "a": "Patterns"},
+            {"q": "True or False: ML requires explicit programming for every task.", "options": ["True", "False"], "a": "False"},
+            {"q": "ML helps in making better ______ in the future.", "options": ["Computers", "Decisions", "Websites", "Emails"], "a": "Decisions"},
+            {"q": "What allows systems to automatically improve?", "options": ["Experience", "More power", "System updates", "Cooling fans"], "a": "Experience"},
+            {"q": "ML focuses on development of ______ programs.", "options": ["Game", "Computer", "Mobile", "Security"], "a": "Computer"},
+            {"q": "Data can come from ______ experience.", "options": ["Indirect", "Direct", "No", "Virtual"], "a": "Direct"},
+            {"q": "The learning begins with ______.", "options": ["Instruction", "Coding", "Formatting", "Deleting"], "a": "Instruction"},
+            {"q": "ML uses data to learn for ______.", "options": ["The user", "Themselves", "The internet", "The server"], "a": "Themselves"},
+            {"q": "Observations include ______.", "options": ["Examples", "Sounds", "Images", "Text"], "a": "Examples"},
+            {"q": "Can ML access data independently?", "options": ["Yes", "No"], "a": "Yes"},
+            {"q": "What is the main goal of using observations?", "options": ["To store data", "To look for patterns", "To delete old data", "To compress files"], "a": "To look for patterns"},
+            {"q": "ML is providing systems the ______ to learn.", "options": ["Ability", "Hardware", "Difficulty", "Constraint"], "a": "Ability"}
+        ],
+        "assignment": "Write a short paragraph (3-5 sentences) explaining the difference between 'supervised' and 'unsupervised' learning based on the pattern recognition concepts mentioned in the video."
+    },
+    {
+        "id": 2,
+        "title": "Data Science Pipeline",
+        "url": "https://www.youtube.com/watch?v=X3paOmcrTjQ",
+        "duration": "10:12",
+        "transcript": "Data science is a multi-disciplinary field that uses scientific methods, processes, algorithms and systems to extract knowledge and insights from structured and unstructured data. The pipeline typically involves data collection, cleaning, exploration, modeling, and communication. Data cleaning is often the most time-consuming step but is crucial for accurate predictions. Visualization helps in communicating insights to stakeholders effectively.",
+        "quiz": [
+            {"q": "Data science is a ______ field.", "options": ["Single-subject", "Multi-disciplinary", "Simple", "Theoretical"], "a": "Multi-disciplinary"},
+            {"q": "What is extracted from data?", "options": ["Weight", "Knowledge and insights", "Speed", "Colors"], "a": "Knowledge and insights"},
+            {"q": "Structured and ______ data are used.", "options": ["Unstructured", "Missing", "Large", "Small"], "a": "Unstructured"},
+            {"q": "Which step is often most time-consuming?", "options": ["Collection", "Cleaning", "Modeling", "Communication"], "a": "Cleaning"},
+            {"q": "Why is cleaning crucial?", "options": ["To save space", "For accurate predictions", "To make data look good", "To reduce file size"], "a": "For accurate predictions"},
+            {"q": "What helps in communicating insights?", "options": ["Algorithms", "Visualization", "Raw data", "Code"], "a": "Visualization"},
+            {"q": "The pipeline includes data ______.", "options": ["Exploration", "Deletion", "Encryption", "Hiding"], "a": "Exploration"},
+            {"q": "Stakeholders need to understand ______.", "options": ["The code", "The insights", "The database", "The hardware"], "a": "The insights"},
+            {"q": "Scientific ______ are used in Data Science.", "options": ["Experiments", "Methods", "Calculator", "Pens"], "a": "Methods"},
+            {"q": "Data science uses ______ to extract knowledge.", "options": ["Algorithms", "Magic", "Manual labor", "Hard drives"], "a": "Algorithms"},
+            {"q": "Structured data is usually ______.", "options": ["Organized", "Random", "Messy", "Lost"], "a": "Organized"},
+            {"q": "Unstructured data includes ______.", "options": ["Tables", "Images/Text", "Spreadsheets", "Indexes"], "a": "Images/Text"},
+            {"q": "Communication is the ______ step usually.", "options": ["First", "Final", "Ignored", "Hidden"], "a": "Final"},
+            {"q": "Modeling comes ______ exploration.", "options": ["Before", "After", "During", "Instead of"], "a": "After"},
+            {"q": "The goal is to get ______ from data.", "options": ["Money", "Insights", "Files", "Errors"], "a": "Insights"}
+        ],
+        "assignment": "List the 5 steps of the Data Science Pipeline mentioned in the video and explain why 'Data Cleaning' is considered the most critical step."
+    },
+    {
+        "id": 3,
+        "title": "Neural Networks Explained",
+        "url": "https://www.youtube.com/watch?v=aircAruvnKk",
+        "duration": "7:30",
+        "transcript": "Neural networks are a set of algorithms, modeled loosely after the human brain, that are designed to recognize patterns. They interpret sensory data through a kind of machine perception, labeling or clustering raw input. The patterns they recognize are numerical, contained in vectors, into which all real-world data, be it images, sound, text or time series, must be translated. A neural network consists of layers: input, hidden, and output.",
+        "quiz": [
+            {"q": "Neural networks are modeled after the ______.", "options": ["Computer", "Human brain", "Internet", "Galaxy"], "a": "Human brain"},
+            {"q": "What are they designed to recognize?", "options": ["Colors", "Patterns", "Sounds", "Files"], "a": "Patterns"},
+            {"q": "They interpret ______ data.", "options": ["Sensory", "Random", "Broken", "Compressed"], "a": "Sensory"},
+            {"q": "What is machine ______?", "options": ["Speed", "Perception", "Power", "Storage"], "a": "Perception"},
+            {"q": "Patterns they recognize are ______.", "options": ["Alphabetical", "Numerical", "Visual", "Auditory"], "a": "Numerical"},
+            {"q": "Data must be translated into ______.", "options": ["Files", "Vectors", "Pixels", "Bits"], "a": "Vectors"},
+            {"q": "How many main types of layers are there?", "options": ["1", "2", "3", "4"], "a": "3"},
+            {"q": "The layer between input and output is ______.", "options": ["Middle", "Hidden", "Central", "Secret"], "a": "Hidden"},
+            {"q": "Images must be converted to ______ for NN.", "options": ["Numbers", "Videos", "Folders", "Links"], "a": "Numbers"},
+            {"q": "Clustering is a way of ______ raw input.", "options": ["Deleting", "Organizing", "Printing", "Hiding"], "a": "Organizing"},
+            {"q": "Time series data is a ______ input.", "options": ["Real-world", "Fake", "Useless", "Small"], "a": "Real-world"},
+            {"q": "Vectors contain ______.", "options": ["Text", "Numbers", "Colors", "Shapes"], "a": "Numbers"},
+            {"q": "What is the final layer called?", "options": ["Result", "Output", "Finish", "End"], "a": "Output"},
+            {"q": "Raw input is often ______ into clusters.", "options": ["Split", "Merged", "Labeled", "Lost"], "a": "Labeled"},
+            {"q": "Perception allows for ______ sensory data.", "options": ["Ignoring", "Interpreting", "Scaling", "Moving"], "a": "Interpreting"}
+        ],
+        "assignment": "Draw a simple diagram (on paper or mentally) of a 3-layer neural network. Label the Input, Hidden, and Output layers. Describe what 'Vectors' are used for in this context."
+    },
+    {
+        "id": 4,
+        "title": "Python for Data Analysis",
+        "url": "https://www.youtube.com/watch?v=r-uOLxNrNk8",
+        "duration": "9:15",
+        "transcript": "Python is the most popular language for data analysis due to its simplicity and powerful libraries like Pandas, NumPy, and Matplotlib. Pandas is used for data manipulation and analysis, providing data structures like DataFrames. NumPy supports large, multi-dimensional arrays and matrices. Matplotlib is the foundation for creating static, animated, and interactive visualizations in Python. Together, they form a powerful stack for any data scientist.",
+        "quiz": [
+            {"q": "Why is Python popular for data analysis?", "options": ["Complexity", "Simplicity", "Speed", "Price"], "a": "Simplicity"},
+            {"q": "Which library is used for data manipulation?", "options": ["NumPy", "Pandas", "Matplotlib", "Request"], "a": "Pandas"},
+            {"q": "What is the main data structure in Pandas?", "options": ["List", "DataFrame", "Array", "Dictionary"], "a": "DataFrame"},
+            {"q": "NumPy supports ______ arrays.", "options": ["Small", "Multi-dimensional", "One-dimensional", "Empty"], "a": "Multi-dimensional"},
+            {"q": "Which library is used for visualization?", "options": ["Pandas", "NumPy", "Matplotlib", "OS"], "a": "Matplotlib"},
+            {"q": "Python libraries are ______.", "options": ["Weak", "Powerful", "Useless", "Old"], "a": "Powerful"},
+            {"q": "DataFrames allow for ______ analysis.", "options": ["Manual", "Automated", "Complex", "No"], "a": "Complex"},
+            {"q": "Matplotlib can create ______ visualizations.", "options": ["Only static", "Interactive", "No", "Audio"], "a": "Interactive"},
+            {"q": "NumPy handles ______.", "options": ["Text", "Matrices", "Webpages", "Emails"], "a": "Matrices"},
+            {"q": "Pandas provides data ______.", "options": ["Servers", "Structures", "Cables", "Power"], "a": "Structures"},
+            {"q": "Python is a ______.", "options": ["Hardware", "Language", "Database", "Browser"], "a": "Language"},
+            {"q": "The combination of these tools is a ______.", "options": ["Mess", "Stack", "Problem", "Game"], "a": "Stack"},
+            {"q": "Static visualizations are ______.", "options": ["Moving", "Still", "Hidden", "Loud"], "a": "Still"},
+            {"q": "Data science requires ______.", "options": ["Coding", "Sleeping", "Running", "Driving"], "a": "Coding"},
+            {"q": "Python is the ______ popular language here.", "options": ["Least", "Most", "Only", "Newest"], "a": "Most"}
+        ],
+        "assignment": "Write a basic Python script snippet (pseudo-code) that would import pandas and numpy. Explain what a 'DataFrame' is in your own words."
+    }
+]

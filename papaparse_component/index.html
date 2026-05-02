@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script>
+        // The Streamlit component API
+        function sendMessageToStreamlit(type, data) {
+            window.parent.postMessage({
+                isStreamlitMessage: true,
+                type: type,
+                ...data
+            }, "*");
+        }
+
+        function init() {
+            sendMessageToStreamlit("streamlit:componentReady", {apiVersion: 1});
+        }
+
+        function setFrameHeight(height) {
+            sendMessageToStreamlit("streamlit:setFrameHeight", {height: height});
+        }
+
+        window.addEventListener("message", function(event) {
+            if (event.data.type === "streamlit:render") {
+                setFrameHeight(70);
+            }
+        });
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                Papa.parse(file, {
+                    header: true,
+                    dynamicTyping: true,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        // Send parsed data back to Streamlit
+                        sendMessageToStreamlit("streamlit:setComponentValue", {value: results.data});
+                    }
+                });
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 10px; color: white; background: transparent; overflow: hidden; }
+        .upload-btn-wrapper { position: relative; overflow: hidden; display: inline-block; cursor: pointer; }
+        .btn { border: 1px solid #4f9eff; color: #4f9eff; background-color: rgba(79, 158, 255, 0.1); padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .btn:hover { background-color: rgba(79, 158, 255, 0.2); }
+        .upload-btn-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; }
+    </style>
+</head>
+<body onload="init()">
+    <div class="upload-btn-wrapper">
+        <button class="btn">📂 Upload CSV (PapaParse)</button>
+        <input type="file" accept=".csv" onchange="handleFile(event)" />
+    </div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+You are modifying an existing Streamlit-based student dashboard project.
+
+Goal: Extend the application into a learning + assessment platform with student login, video-based learning, quiz generation, and Excel-based performance tracking integrated with the existing ML prediction model.
+
+Requirements:
+
+1. Navigation / Student Selection:
+
+* Add a sidebar or navigation bar.
+* Allow users to select or enter a Student ID (e.g., Student 1, Student 2, etc.).
+* Maintain session state for each student.
+
+2. Learning Module:
+
+* Add a "Learning" page where students can:
+
+  * Watch short educational videos (5–10 minutes).
+  * Videos should be related to CSE/ECE topics suitable for ages 18–24 (e.g., Python basics, data structures, circuits, signals).
+* Store video metadata (title, duration, topic).
+
+3. Transcript + Quiz Generation:
+
+* For each video:
+
+  * Provide a transcript (can be predefined text).
+  * Generate a quiz of 15 questions based on the transcript.
+  * Use MCQs with 4 options and 1 correct answer.
+* Questions should reflect concepts in the transcript.
+
+4. Quiz Module:
+
+* Add a "Quiz" page:
+
+  * Show questions one by one or in a form.
+  * Capture student responses.
+  * Calculate score, accuracy, and time spent.
+
+5. Assignment Module:
+
+* Add an "Assignments" page:
+
+  * Provide small coding or conceptual tasks.
+  * Capture submission status and completion score.
+
+6. Feature Engineering for Model:
+
+* Convert student activity into model features such as:
+
+  * time_spent
+  * quiz_score
+  * assignments_completed
+  * engagement_score
+  * consistency_index
+  * interaction_level
+* Ensure features match the existing ML model inputs.
+
+7. Prediction Integration:
+
+* Use existing trained models (.pkl files).
+* Feed processed student features into the model.
+* Display prediction output (e.g., performance category or success probability).
+
+8. Excel Automation:
+
+* Automatically store student data into a structured table.
+* Export results as an Excel file (.xlsx) at the end.
+* Include:
+
+  * Student ID
+  * Video watched
+  * Quiz score
+  * Assignment score
+  * Model prediction
+* Use pandas for backend export.
+* (Optional frontend) Use PapaParse for CSV parsing if needed.
+
+9. UI/UX:
+
+* Clean dashboard layout using Streamlit components.
+* Separate pages:
+
+  * Dashboard
+  * Learning
+  * Quiz
+  * Assignments
+  * Results
+
+10. Code Constraints:
+
+* Keep code modular (functions/classes).
+* Maintain compatibility with existing project structure.
+* Do not break current prediction pipeline.
+
+Deliver:
+
+* Updated app.py
+* Any new helper modules
+* Sample dataset / transcripts / quizzes
+* Working Excel export feature

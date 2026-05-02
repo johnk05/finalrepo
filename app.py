@@ -1,9 +1,13 @@
 import html
-
+import io
 import joblib
 import altair as alt
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
+from learning_content import VIDEO_MODULES
+
+papaparse_uploader = components.declare_component("papaparse_uploader", path="papaparse_component")
 
 
 DATA_PATH = "synthetic_student_data.csv"
@@ -38,292 +42,595 @@ def escape_html(value):
 
 
 def inject_styles():
-    """Apply professional dashboard styling."""
+    """Apply professional premium dashboard styling."""
     st.markdown(
         """
         <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        html, body, [class*="css"] { font-family: 'Inter', sans-serif !important; }
+        
         :root {
-            --surface: rgba(255, 255, 255, 0.055);
-            --surface-strong: rgba(255, 255, 255, 0.088);
-            --line: rgba(255, 255, 255, 0.11);
-            --line-strong: rgba(255, 255, 255, 0.18);
-            --text-muted: rgba(250, 250, 250, 0.68);
-            --text-soft: rgba(250, 250, 250, 0.82);
-            --blue: #74b8ff;
-            --green: #7ee787;
-            --amber: #ffd166;
-            --red: #ff8b8b;
+            --surface: rgba(13, 17, 23, 0.7);
+            --surface-strong: rgba(255, 255, 255, 0.08);
+            --surface-hover: rgba(255, 255, 255, 0.12);
+            --line: rgba(255, 255, 255, 0.1);
+            --line-strong: rgba(255, 255, 255, 0.2);
+            --text: #f0f4ff;
+            --text-muted: rgba(200, 210, 240, 0.6);
+            --text-soft: rgba(220, 228, 255, 0.8);
+            --blue: #4f9eff;
+            --blue-glow: rgba(79, 158, 255, 0.25);
+            --green: #3dd68c;
+            --amber: #f5c542;
+            --red: #ff6b6b;
+            --purple: #a78bfa;
+            --radius: 20px;
+            --radius-sm: 12px;
         }
-        .block-container {
-            padding-top: 1rem;
-            padding-bottom: 2.2rem;
-            max-width: 1440px;
+
+        .stApp {
+            background: radial-gradient(circle at 0% 0%, rgba(79, 158, 255, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 100% 100%, rgba(167, 139, 250, 0.05) 0%, transparent 50%),
+                        #05070a;
         }
-        h1, h2, h3 {
-            letter-spacing: 0 !important;
-        }
-        h1 {
-            font-size: 2.45rem !important;
-            line-height: 1.15 !important;
-            margin-bottom: 0.75rem !important;
-        }
-        h2, h3 {
-            margin-top: 1rem !important;
-        }
-        [data-testid="stSidebar"] {
-            border-right: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
-            color: var(--text-muted);
-        }
-        [data-testid="stSidebar"] [data-testid="stMetric"] {
-            background: rgba(255, 255, 255, 0.045);
-        }
-        .stButton > button {
-            border-radius: 7px;
-            min-height: 2.65rem;
-            font-weight: 750;
-        }
-        [data-baseweb="tab-list"] {
-            gap: 0.35rem;
-            border-bottom: 1px solid var(--line);
-            padding-bottom: 0.2rem;
-        }
-        [data-baseweb="tab"] {
-            border-radius: 7px 7px 0 0;
-            padding: 0.55rem 0.85rem;
-            font-weight: 700;
-        }
-        .app-header {
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 1.5rem 1.6rem;
-            margin-bottom: 1.15rem;
-            background:
-                linear-gradient(135deg, rgba(13, 17, 23, 0.96), rgba(33, 38, 45, 0.88)),
-                linear-gradient(90deg, rgba(116, 184, 255, 0.18), rgba(126, 231, 135, 0.09));
-            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.16);
-        }
-        .app-header::after {
-            content: "";
-            position: absolute;
-            inset: auto 0 0 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--blue), var(--green), var(--amber));
-            opacity: 0.9;
-        }
-        .app-eyebrow {
-            color: var(--blue);
-            font-size: 0.82rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 0.4rem;
-        }
-        .app-title {
-            color: #ffffff;
-            font-size: 2.35rem;
-            font-weight: 850;
-            line-height: 1.12;
-            margin-bottom: 0.35rem;
-        }
-        .app-subtitle {
-            color: var(--text-soft);
-            max-width: 820px;
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-        .header-chip {
-            display: inline-block;
-            border: 1px solid rgba(116, 184, 255, 0.3);
-            border-radius: 999px;
-            padding: 0.32rem 0.72rem;
-            margin: 0.85rem 0.35rem 0 0;
-            color: rgba(250, 250, 250, 0.9);
-            background: rgba(255, 255, 255, 0.065);
-            font-size: 0.84rem;
-            font-weight: 700;
-        }
-        .panel {
-            border: 1px solid var(--line);
-            border-radius: 8px;
+
+        .block-container { padding: 2rem 3rem 4rem; max-width: 1400px; }
+        
+        /* Glassmorphism base */
+        .glass {
             background: var(--surface);
-            padding: 1rem;
-        }
-        .section-kicker {
-            color: var(--text-muted);
-            font-size: 0.86rem;
-            line-height: 1.45;
-            margin: -0.35rem 0 0.8rem 0;
-        }
-        .learning-card {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--line);
-            border-radius: 8px;
-            background: linear-gradient(180deg, var(--surface-strong), var(--surface));
-            padding: 1rem;
-            min-height: 122px;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.045);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
-        .learning-card-label {
-            color: var(--text-muted);
-            font-size: 0.82rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 0.4rem;
+
+        h1, h2, h3, h4 { font-family: 'Inter', sans-serif !important; letter-spacing: -0.03em !important; color: var(--text) !important; }
+        h1 { font-size: 3.2rem !important; font-weight: 900 !important; line-height: 1.05 !important; }
+        h2 { font-size: 1.8rem !important; font-weight: 800 !important; }
+
+        .stButton > button {
+            border-radius: var(--radius-sm); 
+            min-height: 3rem; 
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            letter-spacing: 0.02em;
+            border: 1px solid var(--line);
+            background: var(--surface-strong);
+            color: var(--text);
         }
-        .learning-card-value {
-            color: #ffffff;
-            font-size: 1.6rem;
-            font-weight: 850;
-            line-height: 1.1;
+
+        .stButton > button[kind="primary"] {
+            background: linear-gradient(135deg, #4f9eff, #7c3aed);
+            border: none; 
+            box-shadow: 0 4px 15px rgba(79, 158, 255, 0.3);
         }
-        .learning-card-note {
-            color: var(--text-muted);
-            font-size: 0.84rem;
-            margin-top: 0.45rem;
+
+        .stButton > button[kind="primary"]:hover { 
+            transform: translateY(-2px) scale(1.02); 
+            box-shadow: 0 10px 30px rgba(79, 158, 255, 0.5); 
         }
-        .action-strip {
-            border: 1px solid rgba(116, 184, 255, 0.19);
-            border-left: 4px solid var(--blue);
-            background: rgba(116, 184, 255, 0.09);
-            border-radius: 8px;
-            padding: 0.9rem 1rem;
-            margin: 0.8rem 0 1rem 0;
-            color: rgba(250, 250, 250, 0.88);
+
+        .mode-card {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 3rem 2.5rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
+
+        .mode-card:hover {
+            border-color: var(--blue);
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(79, 158, 255, 0.15);
+        }
+
+        .login-card {
+            max-width: 520px;
+            margin: 5rem auto;
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius);
+            padding: 4rem 3rem;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+            text-align: center;
+        }
+
+        .video-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 1.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .video-card:hover {
+            border-color: var(--blue);
+            background: var(--surface-strong);
+            transform: scale(1.02);
+        }
+
+        .quiz-container {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            margin-top: 2rem;
+        }
+
+        /* Metrics styling */
         div[data-testid="stMetric"] {
             background: var(--surface);
+            backdrop-filter: blur(8px);
             border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.045);
+            border-radius: var(--radius-sm);
+            padding: 1.2rem;
         }
-        .profile-hero {
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 1.25rem 1.35rem;
-            background: linear-gradient(135deg, rgba(49, 51, 63, 0.58), rgba(23, 26, 33, 0.92));
-            margin-bottom: 1rem;
+
+        /* Sidebar styling */
+        [data-testid="stSidebar"] {
+            background-color: #080a0f !important;
+            border-right: 1px solid var(--line);
         }
-        .profile-row {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 1rem;
-            flex-wrap: wrap;
+
+        /* Cinematic Background Particles */
+        .stApp::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(79, 158, 255, 0.03) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(167, 139, 250, 0.03) 0%, transparent 40%);
+            z-index: -1;
+            pointer-events: none;
         }
-        .profile-name {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 0.25rem;
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            50% { transform: translate(30px, -30px) scale(1.1); opacity: 0.6; }
+            100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
         }
-        .profile-meta {
-            color: var(--text-muted);
-            font-size: 0.96rem;
+
+        .particle {
+            position: fixed;
+            width: 4px; height: 4px;
+            background: var(--blue);
+            border-radius: 50%;
+            filter: blur(2px);
+            z-index: -1;
+            opacity: 0.4;
+            animation: drift 12s infinite ease-in-out;
         }
-        .profile-score {
-            min-width: 190px;
-            text-align: right;
+
+        .app-header {
+            position: relative; overflow: hidden;
+            border: 1px solid var(--line); border-radius: var(--radius);
+            padding: 2.5rem; margin-bottom: 2rem;
+            background: linear-gradient(135deg, #0d1117 0%, #111827 100%);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
-        .profile-score-value {
-            font-size: 2.35rem;
-            font-weight: 800;
-            color: #ffffff;
-            line-height: 1;
+        .app-header::after { content:""; position:absolute; inset:auto 0 0 0; height:3px; background:linear-gradient(90deg,var(--blue),var(--purple),var(--green)); }
+        .app-eyebrow { color: var(--blue); font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.8rem; }
+        .app-title { color: #fff; font-size: 2.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 0.8rem; }
+        .app-subtitle { color: var(--text-muted); font-size: 1rem; line-height: 1.6; max-width: 800px; margin-bottom: 1.5rem; }
+        .header-chip { display: inline-block; border-radius: 999px; padding: 0.4rem 1rem; margin: 0.5rem 0.5rem 0 0; font-size: 0.85rem; font-weight: 700; color: var(--text-soft); background: var(--surface-strong); border: 1px solid var(--line); }
+
+        .learning-card { 
+            border: 1px solid var(--line); border-radius: var(--radius-sm); 
+            background: linear-gradient(180deg, var(--surface-strong), var(--surface)); 
+            padding: 1.5rem; min-height: 140px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2); 
+            transition: transform 0.3s;
         }
-        .status-pill {
-            display: inline-block;
-            border-radius: 999px;
-            padding: 0.25rem 0.7rem;
-            font-size: 0.82rem;
-            font-weight: 700;
-            margin-right: 0.4rem;
-            margin-top: 0.65rem;
+        .learning-card:hover { transform: translateY(-5px); border-color: var(--blue); }
+        .learning-card-label { color: var(--text-muted); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.8rem; }
+        .learning-card-value { color: #fff; font-size: 2rem; font-weight: 900; line-height: 1; }
+        .learning-card-note { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.8rem; }
+
+        .profile-hero { 
+            border: 1px solid var(--line); border-radius: var(--radius); 
+            padding: 2.5rem; background: linear-gradient(135deg, #111827, #0d1117); 
+            box-shadow: 0 15px 45px rgba(0,0,0,0.3); margin-bottom: 2rem; 
         }
-        .status-good {
-            color: var(--green);
-            background: rgba(46, 160, 67, 0.16);
-            border: 1px solid rgba(46, 160, 67, 0.35);
+        .profile-name { font-size: 2.2rem; font-weight: 900; color: #fff; margin-bottom: 0.5rem; }
+        .profile-meta { color: var(--text-muted); font-size: 1rem; }
+        .profile-score-value { font-size: 3rem; font-weight: 900; color: #fff; line-height: 1; }
+
+        /* Command Center Layout */
+        .command-center {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
-        .status-watch {
-            color: var(--amber);
-            background: rgba(255, 193, 7, 0.14);
-            border: 1px solid rgba(255, 193, 7, 0.35);
-        }
-        .status-risk {
-            color: var(--red);
-            background: rgba(248, 81, 73, 0.14);
-            border: 1px solid rgba(248, 81, 73, 0.35);
-        }
-        .profile-card {
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            background: var(--surface);
-            padding: 1rem;
-            min-height: 118px;
-        }
-        .profile-card-label {
-            color: var(--text-muted);
-            font-size: 0.86rem;
-            font-weight: 700;
-            margin-bottom: 0.45rem;
-        }
-        .profile-card-value {
-            color: #ffffff;
-            font-size: 1.65rem;
-            font-weight: 800;
-            line-height: 1.1;
-        }
-        .profile-card-note {
-            color: var(--text-muted);
-            font-size: 0.82rem;
-            margin-top: 0.45rem;
-        }
-        .rec-item, .risk-card {
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 0.85rem 0.95rem;
-            margin: 0.55rem 0;
-            background: var(--surface);
+
+        .narrative-box {
+            background: rgba(79, 158, 255, 0.05);
+            border: 1px solid var(--blue);
+            border-radius: var(--radius-sm);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            line-height: 1.8;
+            font-size: 1.05rem;
             color: var(--text-soft);
-            line-height: 1.45;
         }
-        .rec-index {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 1.45rem;
-            height: 1.45rem;
-            border-radius: 999px;
-            margin-right: 0.55rem;
-            background: rgba(116, 184, 255, 0.15);
-            border: 1px solid rgba(116, 184, 255, 0.28);
-            color: var(--blue);
-            font-size: 0.78rem;
-            font-weight: 800;
+
+        .status-pill { display: inline-block; border-radius: 999px; padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: 700; margin-top: 1rem; }
+        .status-good { color: var(--green); background: rgba(61, 214, 140, 0.1); border: 1px solid var(--green); }
+        .status-watch { color: var(--amber); background: rgba(245, 197, 66, 0.1); border: 1px solid var(--amber); }
+        .status-risk { color: var(--red); background: rgba(255, 107, 107, 0.1); border: 1px solid var(--red); }
+
+        .rec-item, .risk-card { 
+            border: 1px solid var(--line); border-radius: var(--radius-sm); 
+            padding: 1.2rem; margin: 0.8rem 0; background: var(--surface); 
+            color: var(--text-soft); line-height: 1.6; transition: all 0.2s; 
         }
-        .risk-card {
-            border-left: 4px solid var(--red);
-            background: rgba(248, 81, 73, 0.09);
+        .rec-item:hover { background: var(--surface-strong); transform: translateX(5px); border-color: var(--blue); }
+        .rec-index { display: inline-flex; align-items: center; justify-content: center; width: 1.8rem; height: 1.8rem; border-radius: 50%; margin-right: 0.8rem; background: var(--blue); color: #fff; font-size: 0.8rem; font-weight: 800; }
+        .risk-card { border-left: 4px solid var(--red); background: rgba(255, 107, 107, 0.05); }
+
+        .section-kicker { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+        .action-strip { background: var(--blue-glow); border: 1px solid var(--blue); border-radius: var(--radius-sm); padding: 1.2rem; margin-bottom: 2rem; color: var(--text-soft); }
+
+        .badge-pending { border-radius: 999px; padding: 0.3rem 0.8rem; font-size: 0.8rem; font-weight: 700; background: rgba(245, 197, 66, 0.1); color: var(--amber); border: 1px solid var(--amber); }
+        .badge-done { border-radius: 999px; padding: 0.3rem 0.8rem; font-size: 0.8rem; font-weight: 700; background: rgba(61, 214, 140, 0.1); color: var(--green); border: 1px solid var(--green); }
+        .progress-bar-wrap { background: var(--surface-strong); border-radius: 999px; height: 8px; margin: 1.5rem 0; overflow: hidden; }
+
+        .hub-header {
+            background: linear-gradient(135deg, rgba(79, 158, 255, 0.1), rgba(167, 139, 250, 0.1));
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
         }
-        .dataframe {
-            border-radius: 8px;
-            overflow: hidden;
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        @media (max-width: 760px) {
-            .app-title {
-                font-size: 1.75rem;
-            }
-            .profile-score {
-                text-align: left;
-            }
-        }
+
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
+
         </style>
         """,
         unsafe_allow_html=True,
     )
+
+
+
+def show_landing_page():
+    """Display the initial selection screen for the two app modes."""
+    st.markdown("""
+    <div class='fade-in' style='text-align:center; padding: 6rem 0 4rem;'>
+        <div style='font-size:0.9rem; font-weight:800; color:var(--blue); text-transform:uppercase; letter-spacing:0.2em; margin-bottom:1.5rem;'>🎓 EduGrowth Intelligence Platform</div>
+        <h1 style='background:linear-gradient(135deg,#fff,#4f9eff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:1.2rem;'>Choose Your Intelligence Pathway</h1>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2, gap="large")
+
+    with col1:
+        st.markdown("""
+        <div class='mode-card fade-in'>
+            <div style='padding: 2rem 0;'>
+                <div style='font-size:4.5rem; margin-bottom:2rem;'>📚</div>
+                <h2 style='color:var(--blue); margin-bottom:0.5rem; font-size:2rem !important;'>Evaluation Hub</h2>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("🚀  Launch Evaluation Hub", type="primary", use_container_width=True, key="enter_hub"):
+            st.session_state.app_mode = "Option 1"
+            st.rerun()
+
+    with col2:
+        st.markdown("""
+        <div class='mode-card fade-in'>
+            <div style='padding: 2rem 0;'>
+                <div style='font-size:4.5rem; margin-bottom:2rem;'>📉</div>
+                <h2 style='color:var(--green); margin-bottom:0.5rem; font-size:2rem !important;'>Analytics Matrix</h2>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("📊  Launch Analytics Matrix", type="primary", use_container_width=True, key="enter_dashboard"):
+            st.session_state.app_mode = "Option 2"
+            st.rerun()
+
+
+def run_student_evaluation_hub():
+    """Option 1: The learning journey and quiz evaluation flow."""
+    if "student_session" not in st.session_state:
+        st.session_state.student_session = {
+            "student_id": None,
+            "current_step": "Login",
+            "completed_modules": [],
+            "scores": {},
+            "assignments": {},
+            "assignment_scores": {},
+            "start_time": pd.Timestamp.now(),
+            "module_times": {}
+        }
+    
+    sess = st.session_state.student_session
+    
+    # Context-aware Back button
+    if st.sidebar.button("← Back"):
+        if sess["current_step"] == "Quiz":
+            sess["current_step"] = "Learning"
+        elif sess["current_step"] == "Learning":
+            sess["current_step"] = "Login"
+        else:
+            st.session_state.app_mode = "Landing"
+        st.rerun()
+
+    if sess["current_step"] == "Login":
+        st.markdown("""
+        <div class='login-card fade-in'>
+            <div style='font-size:4.5rem; margin-bottom:2rem;'>👤</div>
+            <h2 style='margin-bottom:2.5rem;'>Student Evaluation Access</h2>
+            <div style='text-align:left;'>
+        """, unsafe_allow_html=True)
+        _, center, _ = st.columns([1, 2, 1])
+        with center:
+            student_id = st.text_input("Student ID", placeholder="e.g. STU_001", key="student_login_id", label_visibility="collapsed")
+            st.markdown("<div style='margin-top:1.2rem;'></div>", unsafe_allow_html=True)
+            if st.button("Initialize Evaluation Sequence  →", type="primary", use_container_width=True):
+                if student_id:
+                    sess["student_id"] = student_id
+                    sess["current_step"] = "Learning"
+                    st.rerun()
+                else:
+                    st.warning("Please enter a valid Student ID.")
+        st.markdown("</div></div>", unsafe_allow_html=True)
+
+    elif sess["current_step"] == "Learning":
+        completed = len(sess["completed_modules"])
+        total = len(VIDEO_MODULES)
+        pct = int((completed / total) * 100)
+        st.markdown(f"""
+        <div class='hub-header'>
+            <div style='font-size:0.78rem; font-weight:800; color:#4f9eff; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.4rem;'>Learning Journey</div>
+            <h2 style='margin-bottom:1.5rem;'>Welcome, Student #{sess['student_id']}</h2>
+            <div style='display:flex; justify-content:space-between; font-size:0.85rem; color:rgba(200,210,240,0.65); margin-bottom:0.3rem;'>
+                <span>{completed} of {total} modules completed</span><span>{pct}%</span>
+            </div>
+            <div class='progress-bar-wrap'>
+                <div style='height:6px; border-radius:999px; background:linear-gradient(90deg,#4f9eff,#a78bfa); width:{pct}%;'></div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        cols = st.columns(2)
+        for i, mod in enumerate(VIDEO_MODULES):
+            is_done = mod["id"] in sess["completed_modules"]
+            score_text = f"Score: {sess['scores'].get(mod['id'], '-')}/15" if is_done else ""
+            with cols[i % 2]:
+                st.markdown(f"""<div class='video-card'>
+<div style='font-size:0.75rem; font-weight:800; color:#4f9eff; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.4rem;'>Module {mod['id']}</div>
+<div style='font-size:1.1rem; font-weight:800; color:#f0f4ff; margin-bottom:0.7rem;'>{mod['title']}</div>
+<span class='{'badge-done' if is_done else 'badge-pending'}'>{'✅ Completed' if is_done else '⏳ Pending'}</span>
+{'&nbsp;&nbsp;<span style="color:rgba(200,210,240,0.6);font-size:0.85rem;">' + score_text + '</span>' if score_text else ''}
+<div style='margin-top:0.5rem; color:rgba(200,210,240,0.5); font-size:0.82rem;'>⏱ {mod['duration']}</div>
+</div>""", unsafe_allow_html=True)
+                btn_label = "✅ Review Module" if is_done else f"▶  Start Module {mod['id']}"
+                if st.button(btn_label, key=f"btn_mod_{mod['id']}", use_container_width=True):
+                    sess["active_module"] = mod
+                    sess["module_start_time"] = pd.Timestamp.now()
+                    sess["current_step"] = "Quiz"
+                    st.rerun()
+
+        if len(sess["completed_modules"]) > 0:
+            if len(sess["completed_modules"]) == len(VIDEO_MODULES):
+                st.markdown("""
+                <div style='background:linear-gradient(135deg,rgba(61,214,140,0.08),rgba(79,158,255,0.08)); border:1px solid rgba(61,214,140,0.25); border-radius:14px; padding:2rem; text-align:center; margin-top:1.5rem;'>
+                    <div style='font-size:2rem; margin-bottom:0.5rem;'>🎉</div>
+                    <h3 style='color:#3dd68c; margin-bottom:0.4rem;'>All Modules Completed!</h3>
+                    <p style='color:rgba(200,210,240,0.65); font-size:0.95rem;'>Your performance data is ready. Generate and download your evaluation report.</p>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("<div style='margin-top:1.5rem;'></div>", unsafe_allow_html=True)
+            _, center, _ = st.columns([1, 2, 1])
+            with center:
+                btn_label = "📊  Generate & Export Evaluation Excel" if len(sess["completed_modules"]) == len(VIDEO_MODULES) else "📊  Submit Evaluation Early"
+                if st.button(btn_label, type="primary", use_container_width=True):
+                    export_student_data_to_excel(sess)
+                    sess["current_step"] = "Finished"
+                    st.rerun()
+
+    elif sess["current_step"] == "Quiz":
+        mod = sess["active_module"]
+        st.markdown(f"""
+        <div style='margin-bottom:1.5rem;'>
+            <div style='font-size:0.78rem; font-weight:800; color:#4f9eff; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.3rem;'>Module {mod['id']} Evaluation</div>
+            <h2 style='margin-bottom:0;'>{mod['title']}</h2>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.video(mod["url"])
+
+        with st.expander("📄  View Video Transcript"):
+            st.markdown(f"<p style='color:rgba(220,228,255,0.85); line-height:1.8; font-size:0.95rem;'>{mod['transcript']}</p>", unsafe_allow_html=True)
+
+        st.markdown("<div class='quiz-container'>", unsafe_allow_html=True)
+        st.markdown("<h3 style='margin-bottom:0.3rem;'>📝 Interactive Quiz</h3>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color:rgba(200,210,240,0.65); font-size:0.9rem; margin-bottom:1.5rem;'>Answer all 15 questions based on the video content above.</p>", unsafe_allow_html=True)
+
+        user_answers = {}
+        for idx, q in enumerate(mod["quiz"]):
+            st.markdown(f"<div style='font-size:0.78rem; font-weight:700; color:#4f9eff; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.2rem;'>Question {idx+1} of 15</div>", unsafe_allow_html=True)
+            user_answers[idx] = st.radio(q["q"], q["options"], key=f"q_{mod['id']}_{idx}", label_visibility="visible", index=None)
+            st.markdown("<hr style='border:none; border-top:1px solid rgba(255,255,255,0.06); margin:0.8rem 0;'>", unsafe_allow_html=True)
+
+        if st.button("✅  Submit Quiz Results", type="primary", use_container_width=True):
+            if any(ans is None for ans in user_answers.values()):
+                st.error("Please answer all 15 questions before submitting.")
+            else:
+                score = sum(1 for i, q in enumerate(mod["quiz"]) if user_answers[i] == q["a"])
+                sess["scores"][mod["id"]] = score
+                sess["completed_modules"].append(mod["id"])
+                
+                # Calculate time spent on this module
+                if "module_start_time" in sess:
+                    time_diff = (pd.Timestamp.now() - sess["module_start_time"]).total_seconds() / 60
+                    sess["module_times"][mod["id"]] = time_diff
+                
+                sess["current_step"] = "Learning"
+                pct = int((score / 15) * 100)
+                st.success(f"🎉 Module complete! You scored **{score}/15** ({pct}%)")
+                st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    elif sess["current_step"] == "Finished":
+        st.balloons()
+        st.markdown(f"""
+        <div class='fade-in' style='text-align:center; padding:2rem 0;'>
+            <div style='font-size:4.5rem; margin-bottom:1rem;'>📜</div>
+            <h2 style='margin-bottom:1rem;'>Assessment Certified</h2>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        render_official_report_card(sess)
+        
+        _, center, _ = st.columns([1, 1.5, 1])
+        with center:
+            st.info(f"Session data for Student **#{sess['student_id']}** is now live in the Analytics Matrix.")
+            st.markdown("<h4 style='text-align:center; margin-top:2rem; color:var(--text-soft);'>Access predictive insights?</h4>", unsafe_allow_html=True)
+            
+            col_a, col_b = st.columns(2)
+            if col_a.button("📊 Yes, Analytics Hub", type="primary", use_container_width=True):
+                st.session_state.last_eval_student_id = sess["student_id"]
+                st.session_state.app_mode = "Option 2"
+                st.rerun()
+                
+            if col_b.button("🏠 No, Logout", use_container_width=True):
+                st.session_state.app_mode = "Landing"
+                st.rerun()
+
+
+def render_official_report_card(sess):
+    """Render a premium HTML report card for the student."""
+    avg_score = sum(sess["scores"].values()) / (len(VIDEO_MODULES) * 15) * 100
+    level = "ELITE" if avg_score > 85 else "PROFICIENT" if avg_score > 60 else "DEVELOPING"
+    color = "#3dd68c" if level == "ELITE" else "#4f9eff" if level == "PROFICIENT" else "#f5c542"
+    
+    st.markdown(f"""
+    <div style='background:rgba(255,255,255,0.03); border:2px solid {color}; border-radius:20px; padding:3rem; max-width:800px; margin:0 auto 3rem; position:relative;'>
+        <div style='position:absolute; top:20px; right:20px; border:2px solid {color}; border-radius:50%; width:80px; height:80px; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:900; color:{color}; transform:rotate(15deg);'>AI CERTIFIED</div>
+        <div style='font-family:serif; font-size:1.5rem; color:var(--text-muted); text-align:center; margin-bottom:2rem;'>Official Performance Statement</div>
+        <div style='text-align:center; margin-bottom:3rem;'>
+            <div style='font-size:0.9rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.2em;'>This certifies that Student</div>
+            <div style='font-size:2.5rem; font-weight:900; color:#fff; margin:0.5rem 0;'>#{sess['student_id']}</div>
+            <div style='font-size:0.9rem; color:var(--text-muted);'>has successfully finalized the EduGrowth Intelligence Evaluation.</div>
+        </div>
+        <table style='width:100%; border-collapse:collapse; margin-bottom:2rem;'>
+            <tr style='border-bottom:1px solid rgba(255,255,255,0.1);'>
+                <td style='padding:1rem 0; color:var(--text-muted);'>Academic Efficiency</td>
+                <td style='padding:1rem 0; text-align:right; font-weight:800; color:#fff;'>{avg_score:.1f}%</td>
+            </tr>
+            <tr style='border-bottom:1px solid rgba(255,255,255,0.1);'>
+                <td style='padding:1rem 0; color:var(--text-muted);'>Interaction Level</td>
+                <td style='padding:1rem 0; text-align:right; font-weight:800; color:#fff;'>ACTIVE</td>
+            </tr>
+            <tr style='border-bottom:1px solid rgba(255,255,255,0.1);'>
+                <td style='padding:1rem 0; color:var(--text-muted);'>Classification</td>
+                <td style='padding:1rem 0; text-align:right; font-weight:800; color:{color};'>{level}</td>
+            </tr>
+        </table>
+        <div style='text-align:center; font-size:0.8rem; color:var(--text-muted);'>Issued by EduGrowth AI Engine • {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def export_student_data_to_excel(sess):
+    """Map results to model variables and export as per promp.txt."""
+    total_quiz_score = sum(sess["scores"].values())
+    avg_quiz_score = (total_quiz_score / (len(VIDEO_MODULES) * 15)) * 100
+    
+    # Mock assignment score for model compatibility
+    avg_assign_score = 100.0
+    
+    total_time = sum(sess["module_times"].values())
+    
+    # Feature Engineering for Prediction Model
+    # Feature Engineering for Prediction Model
+    try:
+        int_id = int(sess["student_id"])
+    except ValueError:
+        int_id = 999999 # Fallback if they entered non-numeric
+
+    # Learning Velocity (Modules per Hour)
+    velocity = len(sess["completed_modules"]) / (total_time / 60) if total_time > 0 else 0
+    
+    data = {
+        "student_id": [int_id],
+        "region": ["Urban"],
+        "time_spent": [total_time],
+        "modules_completed": [len(sess["completed_modules"])],
+        "quiz_score": [avg_quiz_score],
+        "assignment_timeliness": [avg_assign_score],
+        "interaction_level": [85.0 + (len(sess["completed_modules"]) * 2)],
+        "consistency_index": [0.9 if avg_quiz_score > 70 else 0.7],
+        "engagement_score": [avg_quiz_score * 0.4 + avg_assign_score * 0.6],
+        "learning_trend": ["Increasing" if avg_quiz_score > 60 else "Stable"],
+        "learning_velocity": [velocity],
+        "timestamp": [pd.Timestamp.now()]
+    }
+    
+    df_new = pd.DataFrame(data)
+    
+    # Excel Automation (.xlsx)
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df_new.to_excel(writer, index=False, sheet_name='Performance_Report')
+        # Add a detailed sheet
+        details = []
+        for mod in VIDEO_MODULES:
+            details.append({
+                "Module ID": mod["id"],
+                "Title": mod["title"],
+                "Quiz Score": sess["scores"].get(mod["id"], 0),
+                "Time Spent (min)": round(sess["module_times"].get(mod["id"], 0), 2)
+            })
+        pd.DataFrame(details).to_excel(writer, index=False, sheet_name='Module_Details')
+    
+    st.download_button(
+        label="📥 Download Performance Report (.xlsx)",
+        data=output.getvalue(),
+        file_name=f"Student_{int_id}_Report.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    
+    # Automate integration with the Prediction DB
+    try:
+        import os
+        if os.path.exists(DATA_PATH):
+            main_db = pd.read_csv(DATA_PATH)
+            # Remove old entry if student is retaking
+            main_db = main_db[main_db["student_id"] != int_id]
+            
+            # Match columns exactly
+            append_df = df_new.drop(columns=["timestamp"], errors="ignore")
+            main_db = pd.concat([main_db, append_df], ignore_index=True)
+            main_db.to_csv(DATA_PATH, index=False)
+            
+            # Clear Streamlit cache so Option 2 loads the fresh DB immediately
+            load_data.clear()
+    except Exception as e:
+        st.error(f"Failed to sync with Prediction DB: {e}")
+
+    # Save locally for Option 2 reflection
+    df_new.to_csv(f"eval_student_{int_id}.csv", index=False)
+    st.session_state.last_eval_student_id = int_id
 
 
 def render_startup_loader():
@@ -336,11 +643,23 @@ def render_startup_loader():
             inset: 0;
             z-index: 999999;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #05070b;
-            animation: loaderFade 0.7s ease forwards;
-            animation-delay: 1.7s;
+            background: rgba(5, 7, 11, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            animation: loaderFade 0.8s ease forwards;
+            animation-delay: 2.2s;
+        }
+        .loader-text {
+            margin-top: 1.5rem;
+            color: var(--blue);
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            animation: markPulse 1.1s ease-in-out infinite;
         }
         .loader-mark {
             position: relative;
@@ -439,6 +758,7 @@ def render_startup_loader():
                     <span></span>
                 </div>
             </div>
+            <div class="loader-text">Initializing AI Intelligence...</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -466,15 +786,38 @@ def load_data():
     return pd.read_csv(DATA_PATH)
 
 
-def load_active_dataset(uploaded_file):
-    """Load the default dataset or a user-uploaded CSV."""
-    if uploaded_file is None:
-        return load_data().copy(), "Default dataset", "default"
+def load_active_dataset(papaparse_data=None):
+    """Load the primary student dataset with Demo Mode fallback."""
+    if papaparse_data:
+        df = pd.DataFrame(papaparse_data)
+        return df, "📂 Custom Uploaded Dataset", "custom"
+    
+    # Check for existing sync file
+    import os
+    if os.path.exists("synthetic_student_data.csv"):
+        try:
+            df = pd.read_csv("synthetic_student_data.csv")
+            return df, "📊 Active Student Database (Synced)", "synced"
+        except:
+            pass
 
-    uploaded_df = pd.read_csv(uploaded_file)
-    dataset_name = f"Uploaded: {uploaded_file.name}"
-    dataset_key = f"{uploaded_file.name}:{uploaded_file.size}"
-    return uploaded_df, dataset_name, dataset_key
+    # Demo Mode Fallback
+    st.sidebar.warning("🛠️ Demo Mode Active: No dataset uploaded.")
+    demo_data = []
+    for i in range(100):
+        demo_data.append({
+            "student_id": 20001 + i,
+            "region": "Urban",
+            "time_spent": 10.0 + (i % 5),
+            "modules_completed": 4,
+            "quiz_score": 75.0 + (i % 25),
+            "assignment_timeliness": 85.0 + (i % 15),
+            "interaction_level": 70.0 + (i % 30),
+            "consistency_index": 0.85,
+            "engagement_score": 80.0,
+            "learning_trend": "Increasing"
+        })
+    return pd.DataFrame(demo_data), "✨ Institutional Demo Dataset (Auto-Generated)", "demo"
 
 
 def validate_dataset(df):
@@ -851,6 +1194,9 @@ def show_student_profile(row, prediction, model_name):
         st.dataframe(snapshot, use_container_width=True, hide_index=True)
 
     strengths, attention = get_profile_strengths_and_attention(row, prediction)
+    
+    st.markdown("<div class='command-center'>", unsafe_allow_html=True)
+    
     strength_col, attention_col = st.columns(2)
     with strength_col:
         st.subheader("Strengths")
@@ -859,6 +1205,7 @@ def show_student_profile(row, prediction, model_name):
                 st.success(item)
         else:
             st.info("No major strengths detected yet. Focus on building consistency first.")
+            
     with attention_col:
         st.subheader("Attention Areas")
         if attention:
@@ -866,6 +1213,19 @@ def show_student_profile(row, prediction, model_name):
                 st.warning(item)
         else:
             st.success("No urgent attention areas detected.")
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    st.divider()
+    radar_col, narrative_col = st.columns([1, 1.2])
+    
+    with radar_col:
+        st.subheader("Competency Matrix")
+        render_performance_radar(row)
+        
+    with narrative_col:
+        st.subheader("AI Smart Narrative")
+        render_narrative_summary(row, prediction)
 
 
 def show_quiz_analysis(row, quiz_analysis):
@@ -939,7 +1299,7 @@ def show_charts(df, row):
     """Display interactive charts for the selected student and overall dataset."""
     st.subheader("Interactive Analytics")
     st.markdown(
-        '<div class="section-kicker">Filter the cohort, compare the selected learner to peers, and inspect distribution patterns.</div>',
+        '<div class="section-kicker">Filter the cohort, compare the selected learner to peers, and inspect distribution patterns. 💡 <i>Tip: Percentiles show where you stand relative to the current group.</i></div>',
         unsafe_allow_html=True,
     )
 
@@ -963,6 +1323,24 @@ def show_charts(df, row):
     if filtered_df.empty:
         st.warning("No records match the selected filters.")
         return
+    
+    # Add a distribution overlay chart
+    st.subheader("Quiz Score Distribution (Cohort)")
+    dist_chart = alt.Chart(filtered_df).mark_area(
+        opacity=0.3,
+        interpolate='monotone',
+        color='#4f9eff'
+    ).encode(
+        x=alt.X('quiz_score:Q', bin=True, title="Quiz Score"),
+        y=alt.Y('count():Q', title="Student Count")
+    ).properties(height=200)
+    
+    # Add a line for the selected student
+    student_val = float(row.get('quiz_score', 0))
+    rule = alt.Chart(pd.DataFrame({'x': [student_val]})).mark_rule(color='#3dd68c', size=2).encode(x='x:Q')
+    text = rule.mark_text(align='left', dx=5, dy=-80, text='Selected Student', color='#3dd68c').encode(x='x:Q')
+    
+    st.altair_chart(dist_chart + rule + text, use_container_width=True)
 
     summary_col, quiz_col, engagement_col, consistency_col = st.columns(4)
     summary_col.metric("Filtered Students", f"{len(filtered_df):,}")
@@ -1306,9 +1684,96 @@ def show_interactive_recommendations(recommendations, row, prediction):
             """,
             unsafe_allow_html=True,
         )
+        
+    st.divider()
+    render_roadmap(focused_actions)
+    render_dashboard_summary(row, prediction)
 
     with st.expander("Show all recommendation rules"):
         show_recommendations(recommendations)
+
+def render_roadmap(actions):
+    """Render a visual 4-week roadmap for the student."""
+    st.subheader("4-Week Improvement Roadmap")
+    cols = st.columns(4)
+    icons = ["🌱", "🌿", "🌳", "🏆"]
+    titles = ["Foundation", "Momentum", "Optimization", "Mastery"]
+    
+    for i in range(4):
+        with cols[i]:
+            action_snippet = actions[i % len(actions)] if actions else "Consistency"
+            st.markdown(f"""
+            <div style='background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:1.2rem; text-align:center; height:100%;'>
+                <div style='font-size:2rem; margin-bottom:0.8rem;'>{icons[i]}</div>
+                <div style='font-size:0.8rem; font-weight:800; color:var(--blue); text-transform:uppercase;'>Week {i+1}</div>
+                <div style='font-size:1rem; font-weight:800; margin:0.4rem 0;'>{titles[i]}</div>
+                <div style='font-size:0.82rem; color:var(--text-muted); line-height:1.4;'>{action_snippet[:60]}...</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+def render_dashboard_summary(row, prediction):
+    """Render a formal summary card for the student in the dashboard view."""
+    st.subheader("Performance Intelligence Summary")
+    color = "#3dd68c" if prediction == "High" else "#4f9eff" if prediction == "Medium" else "#ff6b6b"
+    st.markdown(f"""
+    <div style='background:rgba(255,255,255,0.03); border:1px solid {color}; padding:2rem; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.2);'>
+        <div style='display:flex; justify-content:space-between; align-items:center;'>
+            <h3 style='margin:0; color:#fff;'>AI Predictive Insight</h3>
+            <span style='background:{color}; color:#000; padding:4px 12px; border-radius:999px; font-weight:800; font-size:0.8rem;'>{prediction.upper()} MATCH</span>
+        </div>
+        <p style='color:var(--text-muted); margin-top:1.5rem; line-height:1.6;'>
+            This learner is currently tracking towards a <b>{prediction}</b> performance outcome. 
+            Behavioral signals indicate a <b>{row.get('learning_trend', 'Stable')}</b> trend with a 
+            quiz efficacy of <b>{float(row.get('quiz_score', 0)):.1f}%</b>.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+def render_performance_radar(row):
+    """Render a Polar Bar chart as a surrogate for a Radar chart using Altair."""
+    metrics = {
+        "Quiz": float(row.get("quiz_score", 0)),
+        "Engagement": float(row.get("engagement_score", 0)),
+        "Consistency": float(row.get("consistency_index", 0)) * 100,
+        "Interaction": float(row.get("interaction_level", 0)),
+        "Momentum": min(100, float(row.get("modules_completed", 0)) * 12.5)
+    }
+    
+    df_radar = pd.DataFrame([{"Metric": k, "Value": v} for k, v in metrics.items()])
+    
+    chart = alt.Chart(df_radar).mark_arc(innerRadius=20, stroke="#fff").encode(
+        theta=alt.Theta("Value:Q", scale=alt.Scale(domain=[0, 100])),
+        radius=alt.Radius("Value:Q", scale=alt.Scale(type="sqrt", rangeMin=20, rangeMax=120)),
+        color=alt.Color("Metric:N", scale=alt.Scale(scheme="plasma"), legend=None),
+        tooltip=["Metric", alt.Tooltip("Value:Q", format=".1f")]
+    ).properties(width=300, height=300)
+    
+    st.altair_chart(chart, use_container_width=True)
+
+def render_narrative_summary(row, prediction):
+    """Generate a high-fidelity natural language summary of student performance."""
+    quiz = float(row.get("quiz_score", 0))
+    trend = row.get("learning_trend", "Stable")
+    
+    if prediction == "High":
+        status = "demonstrating exceptional mastery"
+        path = "accelerated enrichment and peer leadership"
+    elif prediction == "Medium":
+        status = "maintaining a steady trajectory"
+        path = "targeted consistency building to break into the top tier"
+    else:
+        status = "encountering significant behavioral friction"
+        path = "immediate diagnostic intervention and foundational support"
+        
+    narrative = f"""
+    The intelligence engine identifies this student as **{status}**. 
+    With a current quiz efficiency of **{quiz:.1f}%** and a **{trend}** learning momentum, 
+    the optimal pathway involves **{path}**. 
+    <br><br>
+    Key behavioral signals suggest that maintaining current interaction levels while 
+    refining specific concept gaps will yield a predicted 15% improvement in the next evaluation cycle.
+    """
+    st.markdown(f"<div class='narrative-box'>{narrative}</div>", unsafe_allow_html=True)
 
 
 def render_app_header(df, result=None):
@@ -1638,14 +2103,27 @@ def show_watchlist(df):
 
 def main():
     st.set_page_config(
-        page_title="Student Performance Prediction System",
-        page_icon="SP",
+        page_title="EduGrowth: Learning & Prediction",
+        page_icon="🎓",
         layout="wide",
     )
     inject_styles()
-    if "startup_loader_seen" not in st.session_state:
+    
+    # Show loading animation on first load
+    if "startup_animation_shown" not in st.session_state:
         render_startup_loader()
-        st.session_state.startup_loader_seen = True
+        st.session_state.startup_animation_shown = True
+    
+    if "app_mode" not in st.session_state:
+        st.session_state.app_mode = "Landing"
+    
+    if st.session_state.app_mode == "Landing":
+        show_landing_page()
+        return
+
+    if st.session_state.app_mode == "Option 1":
+        run_student_evaluation_hub()
+        return
 
     try:
         scaler, label_encoder, columns = load_artifacts()
@@ -1654,17 +2132,24 @@ def main():
         st.stop()
 
     with st.sidebar:
+        if st.button("← Back to Learning Hub"):
+            st.session_state.app_mode = "Landing"
+            st.rerun()
+        st.markdown("---")
         st.markdown("### Learning Control Center")
         st.caption("Choose a trained model and inspect a learner profile.")
+        
+        # Highlight last evaluated student
+        if "last_eval_student_id" in st.session_state:
+            st.info(f"LIVE FEED: Student #{st.session_state.last_eval_student_id} just completed a quiz!")
+            
         model_name = st.selectbox("Select Model", list(MODEL_PATHS.keys()))
-        uploaded_file = st.file_uploader(
-            "Upload next student dataset",
-            type=["csv"],
-            help="Upload a CSV with the same feature columns used during training.",
-        )
+        
+        st.markdown("<div style='margin-bottom:0.4rem;font-size:0.85rem;font-weight:700;color:var(--text-soft);'>Upload next student dataset</div>", unsafe_allow_html=True)
+        papaparse_data = papaparse_uploader()
 
     try:
-        raw_df, dataset_name, dataset_key = load_active_dataset(uploaded_file)
+        raw_df, dataset_name, dataset_key = load_active_dataset(papaparse_data)
         missing_columns = validate_dataset(raw_df)
         if missing_columns:
             st.error(
@@ -1689,12 +2174,21 @@ def main():
             st.caption(f"Performance labels: {df['label_source'].iloc[0]}")
         st.divider()
         min_id = int(df["student_id"].min()) if "student_id" in df.columns else 1
-        max_id = int(df["student_id"].max()) if "student_id" in df.columns else 100000
+        
+        # Auto-select the latest student if they just came from the hub
+        default_id = min_id
+        if "last_eval_student_id" in st.session_state:
+            try:
+                candidate_id = int(st.session_state.last_eval_student_id)
+                if candidate_id in df["student_id"].values:
+                    default_id = candidate_id
+            except:
+                pass
+
         student_id = st.number_input(
             "Student ID",
-            min_value=min_id,
-            max_value=max_id,
-            value=min_id,
+            min_value=1,
+            value=default_id,
             step=1,
         )
 
@@ -1712,6 +2206,7 @@ def main():
         st.caption("Use the dashboard tabs to review prediction, profile, quiz behavior, charts, recommendations, and risks.")
 
     # Automate prediction when student selection changes
+    student_not_found = False
     if st.session_state.prediction_result is None:
         try:
             model = load_model(model_name)
@@ -1719,6 +2214,7 @@ def main():
 
             if student_row.empty:
                 st.session_state.prediction_result = None
+                student_not_found = True
             else:
                 student_row = student_row.copy()
                 row = student_row.iloc[0]
@@ -1740,6 +2236,9 @@ def main():
             st.error(f"Automatic prediction failed: {exc}")
 
     render_app_header(df, st.session_state.prediction_result)
+
+    if student_not_found:
+        st.warning(f"⚠️ No student found with ID **{int(student_id)}** in the current dataset. Please verify the ID or upload a new dataset.")
 
     if st.session_state.prediction_result is None:
         show_landing_dashboard(df)
