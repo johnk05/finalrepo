@@ -1683,13 +1683,6 @@ def main():
         st.error("The selected dataset has no rows.")
         st.stop()
 
-    active_context_key = f"{dataset_key}:{model_name}:{student_id}"
-    if "prediction_result" not in st.session_state:
-        st.session_state.prediction_result = None
-    if st.session_state.get("active_context_key") != active_context_key:
-        st.session_state.prediction_result = None
-        st.session_state.active_context_key = active_context_key
-
     with st.sidebar:
         st.success(dataset_name)
         if "label_source" in df.columns:
@@ -1704,6 +1697,13 @@ def main():
             value=min_id,
             step=1,
         )
+
+        active_context_key = f"{dataset_key}:{model_name}:{student_id}"
+        if "prediction_result" not in st.session_state:
+            st.session_state.prediction_result = None
+        if st.session_state.get("active_context_key") != active_context_key:
+            st.session_state.prediction_result = None
+            st.session_state.active_context_key = active_context_key
 
         predict_clicked = st.button("Predict Performance", type="primary")
         st.divider()
